@@ -1,7 +1,8 @@
 package main
 
 import (
-	"backend/pkg/db"
+	"backend/pkg/repository"
+	"backend/pkg/repository/dbrepo"
 	"flag"
 	"log"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 
 type application struct {
 	DSN     string
-	DB      db.PostgresConn
+	DB      repository.DatabaseRepo
 	Session *scs.SessionManager
 }
 
@@ -27,7 +28,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	app.DB = db.PostgresConn{DB: conn}
+	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 
 	app.Session = getSession()
 
