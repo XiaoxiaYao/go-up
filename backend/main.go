@@ -4,19 +4,26 @@ import (
 	"backend/pkg/repository"
 	"backend/pkg/repository/dbrepo"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 )
 
+const port = 8080
+
 type application struct {
-	DSN string
-	DB  repository.DatabaseRepo
+	DSN       string
+	DB        repository.DatabaseRepo
+	Domain    string
+	JWTSecret string
 }
 
 func main() {
 	app := application{}
 
+	flag.StringVar(&app.Domain, "domain", "example.com", "Domain for application, e.g. company.com")
 	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=users sslmode=disable timezone=UTC connect_timeout=5", "Postgre connection")
+	flag.StringVar(&app.JWTSecret, "jwt-secret", "jwt_development_secret", "signing secret")
 	flag.Parse()
 
 	conn, err := app.connectToDB()
@@ -29,9 +36,9 @@ func main() {
 
 	mux := app.routes()
 
-	log.Println("😊 Starting server on port 8080. :)")
+	log.Printf("😊 Starting api on port %d", port)
 
-	err = http.ListenAndServe(":8080", mux)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		log.Fatal(err)
 	}

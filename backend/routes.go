@@ -14,5 +14,16 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/", app.Home)
 
+	mux.Post("/auth", app.authenticate)
+	mux.Post("/refresh-token", app.refresh)
+
+	mux.Route("/users", func(mux chi.Router) {
+		mux.Get("/", app.allUsers)
+		mux.Get("/{userID}", app.getUser)
+		mux.Delete("/{userID}", app.deleteUser)
+		mux.Post("/{userID}", app.insertUser)
+		mux.Patch("/{userID}", app.updateUser)
+	})
+
 	return mux
 }
