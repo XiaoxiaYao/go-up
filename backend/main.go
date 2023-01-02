@@ -6,14 +6,11 @@ import (
 	"flag"
 	"log"
 	"net/http"
-
-	"github.com/alexedwards/scs/v2"
 )
 
 type application struct {
-	DSN     string
-	DB      repository.DatabaseRepo
-	Session *scs.SessionManager
+	DSN string
+	DB  repository.DatabaseRepo
 }
 
 func main() {
@@ -29,8 +26,6 @@ func main() {
 	defer conn.Close()
 
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
-
-	app.Session = getSession()
 
 	mux := app.routes()
 
