@@ -11,6 +11,7 @@ func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
+	mux.Use(app.enableCORS)
 
 	mux.Get("/", app.Home)
 
@@ -18,10 +19,12 @@ func (app *application) routes() http.Handler {
 	mux.Post("/refresh-token", app.refresh)
 
 	mux.Route("/users", func(mux chi.Router) {
+		mux.Use(app.authRequired)
+
 		mux.Get("/", app.allUsers)
 		mux.Get("/{userID}", app.getUser)
 		mux.Delete("/{userID}", app.deleteUser)
-		mux.Post("/{userID}", app.insertUser)
+		mux.Put("/", app.insertUser)
 		mux.Patch("/{userID}", app.updateUser)
 	})
 
